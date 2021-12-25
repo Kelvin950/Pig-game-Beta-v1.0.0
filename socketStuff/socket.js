@@ -3,7 +3,7 @@ const Player=  require("./Player")
 const Dice=  require("./dice")
 let numberOfConnection =  0;
 const players =  []
-const {addClientToMap , switchPlayer} = require("./RandomLetter")
+const {addClientToMap , switchPlayer , hold} = require("./RandomLetter")
 const newDice =  new Dice();
 const userSocketIdMap =  new Map();
 
@@ -64,7 +64,7 @@ socket.on("roll" , (data)=>{
      newDice.setSrc();
      let diceSrc =  newDice.getSrc();
         let gPlayer =  players.find(player1=> player1.name === player.name);
-        gPlayer.score += dice;
+        gPlayer.currentScore += dice;
         console.log(dice);
           if(dice ===1){
 
@@ -79,14 +79,22 @@ socket.on("roll" , (data)=>{
           }
 
    io.to(room).emit("roll" , {
-      diceSrc:diceSrc , score: gPlayer.score
+      diceSrc:diceSrc , score: gPlayer.currentScore
    })
-    
+      
+ 
 
 })
   
 
+socket.on("hold" , data=>{
+        
+   hold(players) ;
+   io.to(room).emit("hold" , {
+      players:players,
+   })
 
+})
 
  
 })

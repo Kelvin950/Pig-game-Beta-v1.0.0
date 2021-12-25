@@ -38,7 +38,7 @@ const switchPlayer = function () {
     player1El.classList.toggle('player--active');
   };
 
-  function setMain(players ,player){
+  function setMain(players ,player  ){
 
   console.log(players);
 
@@ -50,7 +50,7 @@ const switchPlayer = function () {
         <p class="score" id="score--${index}">${player.score}</p>
         <div class="current">
           <p class="current-label">Current</p>
-          <p class="current-score" id="current--${index}">${player.score}</p>
+          <p class="current-score" id="current--${index}">${player.currentScore}</p>
         </div>
         
         </section>
@@ -64,7 +64,7 @@ const switchPlayer = function () {
        
         
           
-    <button class="btn btn--hold" >📥 Hold</button>
+    <button class="btn btn--hold"  ${(player.currentPlayer)?"": "disabled" } >📥 Hold</button>
     <img src="img/dice-5.png" alt="Playing dice" class="dice" />
     `
   }
@@ -76,6 +76,7 @@ const switchPlayer = function () {
 
     console.log(players);
     document.querySelector("main").innerHTML = "";
-    document.querySelector("main").insertAdjacentHTML("afterbegin" , setMain(players , player ))
-    document.querySelector(".btn--roll").addEventListener("click" ,click)
+    document.querySelector("main").insertAdjacentHTML("afterbegin" , setMain(players , player ));
+    document.querySelector(".btn--roll").addEventListener("click" ,click);
+    document.querySelector(".btn--hold").addEventListener("click",Hold);
   }

@@ -61,6 +61,23 @@ function click(e){
     
     }
 
+    function Hold(e){
+        console.log(e.target);
+        console.log(player);
+        socket.emit("hold" , {
+            player:player
+        })  
+    }
+
+
+    socket.on("hold" , data=>{
+        console.log(data);
+        player =  data.players.find(player=>player.name === username);
+        console.log(player);
+        // console.log(data.username);
+        draw(data.players);
+    })
+
 socket.on("roll" , data=>{
 
     console.log(player);
@@ -102,3 +119,4 @@ socket.on("switch" , data=>{
     console.log(data.username);
     draw(data.players)
 })
+

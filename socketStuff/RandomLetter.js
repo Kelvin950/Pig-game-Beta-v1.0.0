@@ -17,7 +17,7 @@ exports.switchPlayer = ( players)=>{
   
     let currentPlayer  = players.find(player => player.currentPlayer === true) ; 
     let  otherPlayer =  players.find(player => player.currentPlayer !== true);
-      currentPlayer.score =   0 ;
+      currentPlayer.currentScore =   0 ;
   
       currentPlayer.currentPlayer =  false ; 
          otherPlayer.currentPlayer =  true;
@@ -25,4 +25,18 @@ console.log(players);
       
   
 
+}
+
+
+exports.hold =  (players)=>{
+
+    let currentPlayer  = players.find(player => player.currentPlayer === true) ; 
+    let  otherPlayer =  players.find(player => player.currentPlayer !== true);
+    
+    currentPlayer.setScore();
+      currentPlayer.SetcurrentScore();
+  
+      currentPlayer.currentPlayer =  false ; 
+         otherPlayer.currentPlayer =  true;
+console.log(players);
 }

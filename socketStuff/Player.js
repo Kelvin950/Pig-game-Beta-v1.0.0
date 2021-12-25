@@ -3,17 +3,18 @@
 class Player{
     constructor(name , score ){
         this.name=  name ;
-        this.score =  score;
+        this.score =  0;
+        this.currentScore =  score;
         this.id =  "";
         this.currentPlayer =true;
     }
 
-    incrementScore(){
-        this.score++;
+    SetcurrentScore(){
+        this.currentScore= 0 ;
     }
 
-    deleteScore(){
-        this.score =  0
+    setScore(){
+        this.score += this.currentScore;
     }
 
     getScore(){
