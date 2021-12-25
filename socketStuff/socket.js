@@ -1,9 +1,9 @@
 const {io} =  require("../server");
 const Player=  require("./Player")
 const Dice=  require("./dice")
-let numberOfConnection =  0;
+
 const players =  []
-const {addClientToMap , switchPlayer , hold} = require("./RandomLetter")
+const {addClientToMap , switchPlayer , hold ,removeClientFromMap} = require("./RandomLetter")
 const newDice =  new Dice();
 const userSocketIdMap =  new Map();
 
@@ -18,17 +18,18 @@ io.on("connection" , socket=>{
    addClientToMap(socket.id , username , userSocketIdMap);
    
  let names =  Array.from(userSocketIdMap.keys());
- 
+ let numOfSocketsConnected=  io.engine.clientsCount;
+ console.log(numOfSocketsConnected);
   io.emit("userSconnected" , {
 
-    names:names
-    
+    names:names,
+    usersOline:numOfSocketsConnected
   });
 
   
 console.log(players);
-let dice = 5 ;
-let score =6
+// let dice = 5 ;
+// let score =6
 let room =  "";
 let gamePlayer ;
 socket.on("name" , (data)=>{
@@ -96,7 +97,22 @@ socket.on("hold" , data=>{
 
 })
 
- 
+  
+socket.on("disconnect" , ()=>{
+   removeClientFromMap(socket.id , username , userSocketIdMap);
+   
+   let names =  Array.from(userSocketIdMap.keys());
+   let numOfSocketsConnected=  io.engine.clientsCount;
+   // console.log(names , numOfSocketsConnected);
+   // console.log("a user left");
+   // console.log(io.engine.clientsCount);
+   io.emit("userSconnected" , {
+
+      names:names,
+      usersOline:numOfSocketsConnected
+    });
+  
+})
 })
 
 

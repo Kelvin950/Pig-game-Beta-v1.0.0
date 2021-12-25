@@ -12,6 +12,22 @@ exports.addClientToMap =  (socketid , username , userSocketIdMap)=>{
     }
 }
 
+exports.removeClientFromMap =  (socketid , username , userSocketIdMap)=>{
+
+    if(userSocketIdMap.has(username)){
+        let userSocketIdSet  = userSocketIdMap.get(username);
+        userSocketIdSet.delete(socketid);
+
+        
+if(userSocketIdSet.size ===0){
+
+    userSocketIdMap.delete(username);
+}
+    }
+
+
+
+}
 
 exports.switchPlayer = ( players)=>{
   

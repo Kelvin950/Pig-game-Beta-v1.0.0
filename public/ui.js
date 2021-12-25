@@ -37,4 +37,3 @@ howButton.addEventListener("click" , ()=>{
     modal.classList.remove("hidden");
      overlay.classList.remove("hidden");
 })
-console.log(5);

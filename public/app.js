@@ -19,29 +19,34 @@ let userID ;
 
 
 socket.on("userSconnected" ,data=>{
-
+console.log(data);
     
     console.log(data.names);
    let {names} =  data
    names =  names.filter(name=>name !== username)
    console.log(names);
-   document.querySelector(".usersonline").innerHTML =  ""
-     
-   names.forEach(name=>{
-    document.querySelector(".usersonline").innerHTML +=  `<li>${name}</li>`
+chatBox.innerHTML =  ""
+     const html =  ` <h4>
+     Online (${data.usersOline}) <button class="drop"><i class="fas fa-sort-down"></i></button>
+ </h4>
+   <ul>  
+      ${names.map(name=>{
+       return  `<li>${name}</li>`
+      }).join(" ")}
+   </ul>`
 
-   })
-   
+   chatBox.innerHTML = html;
+ 
 
 })
 
-document.querySelector(".usersonline").addEventListener("click" , (e)=>{
+chatBox.addEventListener("click" , (e)=>{
     
   console.log(e.target.innerHTML);
 
-  socket.emit("name" , {
-    name:e.target.innerHTML
- })
+  
+
+
 })
 
 socket.on("hello" , data=>{
@@ -120,3 +125,7 @@ socket.on("switch" , data=>{
     draw(data.players)
 })
 
+
+// socket.on("usersConnected" , data=>{
+//     console.log(data);
+// })
