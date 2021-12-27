@@ -1,3 +1,4 @@
+const e = require("express");
 
 
 class Player{
@@ -7,6 +8,8 @@ class Player{
         this.currentScore =  score;
         this.id =  "";
         this.currentPlayer =true;
+        this.inARoom = false;
+        this.room = "";
     }
 
     SetcurrentScore(){
@@ -23,8 +26,24 @@ class Player{
     }
 
     getName(){
-        return this.nameame;
+        return this.name;
     }
+
+    getRoom(){
+        return  this.room;
+    }
+
+    getInARoom(){
+        return this.inARoom;
+    }
+ setRoom(room){
+     this.room = room;
+ }
+ UpdateRoom(){
+    if(this.inARoom) this.inARoom =  false;
+    else this.inARoom =  true;
+     
+ }
 }
 
 

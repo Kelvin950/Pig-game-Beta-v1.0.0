@@ -16,7 +16,7 @@ io.on("connection" , socket=>{
   
  
    addClientToMap(socket.id , username , userSocketIdMap);
-   
+   // console.log(userSocketIdMap.get(username));
  let names =  Array.from(userSocketIdMap.keys());
  let numOfSocketsConnected=  io.engine.clientsCount;
  console.log(numOfSocketsConnected);
@@ -32,28 +32,82 @@ console.log(players);
 // let score =6
 let room =  "";
 let gamePlayer ;
-socket.on("name" , (data)=>{
-    
- 
-    console.log(userSocketIdMap.get(data.name));
-    room= `${userSocketIdMap.get(data.name)}${userSocketIdMap.get(username)}`
-socket.join(`${userSocketIdMap.get(data.name)}${userSocketIdMap.get(username)}` );
-   io.to(`${userSocketIdMap.get(data.name)}${userSocketIdMap.get(username)}`).emit("hello" , {data:"hello"});
-gamePlayer= new Player(username ,0);
+// const f = new Set("kelvin");
+// console.log(f.values(""));
+socket.on("invite" ,(data,cb)=>{
 
+  const socketid= Array.from(userSocketIdMap.get(data.name));
+
+socket.broadcast.to(socketid[0]).emit("invitation" ,{
+    message:"Join my game" ,
+    from:{id:socket.id , sender:data.sender}
+});
+
+socket.join(`${socket.id}${socketid[0]}`);
+gamePlayer= new Player(username ,0);
+gamePlayer.setRoom(`${socket.id}${socketid[0]}`);
+gamePlayer.UpdateRoom();
+players.push(gamePlayer);
+socket.emit("gamePlayer" , {
+   data:gamePlayer
+});
+console.log(players);
+// gamePlayer.room =  `${socket.id}${socketid[0]}`;
+
+
+cb();
+    
+})
+
+// socket.on('sendMessage', (message, callback) => {
+//    const filter = new Filter()
+//    if (filter.isProfane(message)) {
+//    return callback('Profanity is not allowed!')
+//    }
+//    io.emit('message', message)
+//    callback()
+//   })
+socket.on("joined" , (data ,cb)=>{
+    
+// console.log(gamePlayer);
+   //  console.log(userSocketIdMap.get(data.name));
+   //  room= `${userSocketIdMap.get(data.name)}${userSocketIdMap.get(username)}`
+   gamePlayer= new Player(username ,0);
+gamePlayer.setRoom(`${data.id}${socket.id}`);
+gamePlayer.UpdateRoom();
 players.push(gamePlayer);
 if(players.length >1)players[1].currentPlayer = false ;
+socket.join(gamePlayer.getRoom());
+   io.to(gamePlayer.getRoom()).emit("hello" , {data:"hello"});
+
 socket.emit("gamePlayer" , {
    data:gamePlayer
 })
 console.log(players);
-io.to(room).emit("playerDetails" , {
+io.to(gamePlayer.getRoom()).emit("changeLocation" , {
+   players:players.filter(player=>player.getRoom()===gamePlayer.getRoom()), 
+
+});
+
+ 
+})
+
+io.emit("playerDetails" , {
    players:players, 
 
-})
-})
+});
 
-
+socket.on("joinedGame" ,({room})=>{
+   console.log(room);
+       
+   socket.join(room);
+   socket.emit("gamePlayer" , {
+      data:players.find(player=>player.getName() === username)
+   })
+   io.to(room).emit("drawGame" , {
+         players:players.filter(player=>player.getRoom()===room)
+   });
+} )
 
 
 socket.on("roll" , (data)=>{
@@ -72,14 +126,14 @@ socket.on("roll" , (data)=>{
             switchPlayer(players);
           
             console.log(players ,21);
-            io.to(room).emit("switch" , {
+            io.to(data.room).emit("switch" , {
                players:players ,
                // currentPlayer: players.find(player=>player.name === username),
                username:username
             })
           }
 
-   io.to(room).emit("roll" , {
+   io.to(data.room).emit("roll" , {
       diceSrc:diceSrc , score: gPlayer.currentScore
    })
       
@@ -91,7 +145,7 @@ socket.on("roll" , (data)=>{
 socket.on("hold" , data=>{
         
    hold(players) ;
-   io.to(room).emit("hold" , {
+   io.to(data.room).emit("hold" , {
       players:players,
    })
 
@@ -103,6 +157,7 @@ socket.on("disconnect" , ()=>{
    
    let names =  Array.from(userSocketIdMap.keys());
    let numOfSocketsConnected=  io.engine.clientsCount;
+   console.log(numOfSocketsConnected);
    // console.log(names , numOfSocketsConnected);
    // console.log("a user left");
    // console.log(io.engine.clientsCount);

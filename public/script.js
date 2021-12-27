@@ -79,4 +79,5 @@ const switchPlayer = function () {
     document.querySelector("main").insertAdjacentHTML("afterbegin" , setMain(players , player ));
     document.querySelector(".btn--roll").addEventListener("click" ,click);
     document.querySelector(".btn--hold").addEventListener("click",Hold);
+//  console.log(players);
   }
