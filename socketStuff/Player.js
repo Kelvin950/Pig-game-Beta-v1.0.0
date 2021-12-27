@@ -7,7 +7,7 @@ class Player{
         this.score =  0;
         this.currentScore =  score;
         this.id =  "";
-        this.currentPlayer =true;
+        this.currentPlayer =false;
         this.inARoom = false;
         this.room = "";
     }

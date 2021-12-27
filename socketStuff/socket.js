@@ -3,7 +3,7 @@ const Player=  require("./Player")
 const Dice=  require("./dice")
 
 const players =  []
-const {addClientToMap , switchPlayer , hold ,removeClientFromMap} = require("./RandomLetter")
+const {addClientToMap , switchPlayer , hold ,removeClientFromMap ,addUserIntoARoom , setPlayer1ToCurrentPlayer ,playersInRoom , outputRoom} = require("./RandomLetter")
 const newDice =  new Dice();
 const userSocketIdMap =  new Map();
 
@@ -30,8 +30,8 @@ io.on("connection" , socket=>{
 console.log(players);
 // let dice = 5 ;
 // let score =6
-let room =  "";
-let gamePlayer ;
+// let room =  "";
+// let gamePlayer ;
 // const f = new Set("kelvin");
 // console.log(f.values(""));
 socket.on("invite" ,(data,cb)=>{
@@ -44,12 +44,12 @@ socket.broadcast.to(socketid[0]).emit("invitation" ,{
 });
 
 socket.join(`${socket.id}${socketid[0]}`);
-gamePlayer= new Player(username ,0);
-gamePlayer.setRoom(`${socket.id}${socketid[0]}`);
-gamePlayer.UpdateRoom();
-players.push(gamePlayer);
+const firstPlayer= new Player(username ,0);
+firstPlayer.setRoom(`${socket.id}${socketid[0]}`);
+firstPlayer.UpdateRoom();
+players.push(firstPlayer);
 socket.emit("gamePlayer" , {
-   data:gamePlayer
+   data:firstPlayer
 });
 console.log(players);
 // gamePlayer.room =  `${socket.id}${socketid[0]}`;
@@ -72,20 +72,24 @@ socket.on("joined" , (data ,cb)=>{
 // console.log(gamePlayer);
    //  console.log(userSocketIdMap.get(data.name));
    //  room= `${userSocketIdMap.get(data.name)}${userSocketIdMap.get(username)}`
-   gamePlayer= new Player(username ,0);
-gamePlayer.setRoom(`${data.id}${socket.id}`);
-gamePlayer.UpdateRoom();
-players.push(gamePlayer);
-if(players.length >1)players[1].currentPlayer = false ;
-socket.join(gamePlayer.getRoom());
-   io.to(gamePlayer.getRoom()).emit("hello" , {data:"hello"});
+  const  secondPlayer= new Player(username ,0);
+secondPlayer.setRoom(`${data.id}${socket.id}`);
+secondPlayer.UpdateRoom();
+players.push(secondPlayer);
+ 
+const firstPlayer =  players.find(player=>player.getName() === data.sender)
+// if(players.length >1)players[1].currentPlayer = false ;
+addUserIntoARoom(firstPlayer , secondPlayer);
+setPlayer1ToCurrentPlayer(firstPlayer);
+socket.join(secondPlayer.getRoom());
+   io.to(secondPlayer.getRoom()).emit("hello" , {data:"hello"});
 
 socket.emit("gamePlayer" , {
-   data:gamePlayer
+   data:secondPlayer
 })
 console.log(players);
-io.to(gamePlayer.getRoom()).emit("changeLocation" , {
-   players:players.filter(player=>player.getRoom()===gamePlayer.getRoom()), 
+io.to(secondPlayer.getRoom()).emit("changeLocation" , {
+   players:playersInRoom(secondPlayer.getRoom()), 
 
 });
 
@@ -105,7 +109,7 @@ socket.on("joinedGame" ,({room})=>{
       data:players.find(player=>player.getName() === username)
    })
    io.to(room).emit("drawGame" , {
-         players:players.filter(player=>player.getRoom()===room)
+         players:playersInRoom(room)
    });
 } )
 
@@ -113,29 +117,35 @@ socket.on("joinedGame" ,({room})=>{
 socket.on("roll" , (data)=>{
  
    const {player} =  data;
+   const {room} =  data
+   console.log(room);
+  outputRoom()
+   const playersIntheRoom=  playersInRoom(room)
+   console.log(playersIntheRoom);
    console.log(player);
     newDice.generateRandomNumber();
     let dice =  newDice.getDice();
      newDice.setSrc();
      let diceSrc =  newDice.getSrc();
-        let gPlayer =  players.find(player1=> player1.name === player.name);
+        let gPlayer =  playersIntheRoom.find(player1=>player1.getName()===player.name);
         gPlayer.currentScore += dice;
+        console.log(gPlayer ,1);
         console.log(dice);
           if(dice ===1){
 
-            switchPlayer(players);
+            switchPlayer(playersIntheRoom);
           
-            console.log(players ,21);
-            io.to(data.room).emit("switch" , {
-               players:players ,
+            console.log(playersIntheRoom,21);
+            io.to(room).emit("switch" , {
+               players: playersIntheRoom,
                // currentPlayer: players.find(player=>player.name === username),
                username:username
             })
           }
 
-   io.to(data.room).emit("roll" , {
+   io.to(room).emit("roll" , {
       diceSrc:diceSrc , score: gPlayer.currentScore
-   })
+   });
       
  
 
@@ -144,12 +154,12 @@ socket.on("roll" , (data)=>{
 
 socket.on("hold" , data=>{
         
-   hold(players) ;
+   hold(playersInRoom(data.room)) ;
    io.to(data.room).emit("hold" , {
-      players:players,
-   })
+      players:playersInRoom(data.room),
+   });
 
-})
+});
 
   
 socket.on("disconnect" , ()=>{

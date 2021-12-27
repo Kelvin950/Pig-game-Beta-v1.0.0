@@ -94,7 +94,7 @@ document.querySelectorAll(".accept").forEach((button)=>{
     console.log(e.target.parentElement);
     console.log("accept");
 
-    socket.emit("joined" , {id:data.from.id})
+    socket.emit("joined" , {id:data.from.id ,sender:data.from.sender})
     })
 })
 
@@ -121,6 +121,7 @@ window.addEventListener("load" , ()=>{
         console.log(location.search);
         const room =  location.search.split("=")[1];
         console.log(room);
+        
         socket.emit("joinedGame" , {
            
             room:room
@@ -136,6 +137,7 @@ window.addEventListener("load" , ()=>{
             players = data.players;
                   console.log(player);
             draw(players)
+            console.log(players);
         })
 
     }

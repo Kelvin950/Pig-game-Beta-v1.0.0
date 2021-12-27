@@ -1,4 +1,4 @@
-
+const Player=  require("./Player")
 
 
 
@@ -47,6 +47,7 @@ console.log(players);
 exports.hold =  (players)=>{
 
     let currentPlayer  = players.find(player => player.currentPlayer === true) ; 
+    console.log(currentPlayer);
     let  otherPlayer =  players.find(player => player.currentPlayer !== true);
     
     currentPlayer.setScore();
@@ -56,3 +57,42 @@ exports.hold =  (players)=>{
          otherPlayer.currentPlayer =  true;
 console.log(players);
 }
+
+
+const Rooms = new Map() ;
+
+
+exports.addUserIntoARoom = (player1 ,player2)=>{
+
+
+    Rooms.set(player1.getRoom() , [player1 , player2] );
+     
+
+
+}
+exports.outputRoom= ()=>{
+    console.log(Rooms);
+}
+exports.setPlayer1ToCurrentPlayer = (player1)=>{
+
+    const array  = Rooms.get(player1.getRoom()) ;
+    array.find(player=> player.username=== player1.username).currentPlayer =  true;
+      
+}
+
+exports.playersInRoom =(room)=>{
+
+
+    return Rooms.get(room)
+
+}
+
+// const player1  =new Player("jelvin" , 0);
+// const player2 =  new Player("kelvin" , 1);
+
+// addUserIntoARoom(player1 , player2);
+// setPlayer1ToCurrentPlayer(player1)
+
+// console.log(player1, player2);
+
+// addUserIntoARoom(player1 , player2)
