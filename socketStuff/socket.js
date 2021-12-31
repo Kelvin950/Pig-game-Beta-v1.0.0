@@ -3,7 +3,7 @@ const Player=  require("./Player")
 const Dice=  require("./dice")
 
 const players =  []
-const {addClientToMap , switchPlayer , hold ,removeClientFromMap ,addUserIntoARoom , setPlayer1ToCurrentPlayer ,playersInRoom , outputRoom} = require("./RandomLetter")
+const {addClientToMap , switchPlayer , hold ,removeClientFromMap ,addUserIntoARoom , setPlayer1ToCurrentPlayer ,playersInRoom , outputRoom ,leaveRoom} = require("./RandomLetter")
 const newDice =  new Dice();
 const userSocketIdMap =  new Map();
 
@@ -108,6 +108,10 @@ socket.on("joinedGame" ,({room})=>{
    socket.emit("gamePlayer" , {
       data:players.find(player=>player.getName() === username)
    })
+   playersInRoom(room).forEach(player1=>{
+      player1.gameStarted= false;
+   });
+   console.log(playersInRoom(room));
    io.to(room).emit("drawGame" , {
          players:playersInRoom(room)
    });
@@ -121,6 +125,9 @@ socket.on("roll" , (data)=>{
    console.log(room);
   outputRoom()
    const playersIntheRoom=  playersInRoom(room)
+   playersIntheRoom.forEach(player=>{
+      player.gameStarted= true;
+   })
    console.log(playersIntheRoom);
    console.log(player);
     newDice.generateRandomNumber();
@@ -163,6 +170,16 @@ socket.on("hold" , data=>{
 
   
 socket.on("disconnect" , ()=>{
+
+   console.log(players);
+   const player = players.find(p=>p.name === username);
+   if(player.gameStarted){
+          console.log(player,1);
+      leaveRoom(player.room ,username);
+      
+      io.to(player.room).emit("playerLeft" , {player:player});
+   }
+        
    removeClientFromMap(socket.id , username , userSocketIdMap);
    
    let names =  Array.from(userSocketIdMap.keys());

@@ -87,6 +87,14 @@ exports.playersInRoom =(room)=>{
 
 }
 
+
+exports.leaveRoom= (room ,username)=>{
+
+    const players =  Rooms.get(room);
+  const index = players.findIndex(player=>player.name === username);
+  players.splice(index , 1);
+}
+
 // const player1  =new Player("jelvin" , 0);
 // const player2 =  new Player("kelvin" , 1);
 

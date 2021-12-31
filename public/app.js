@@ -34,7 +34,7 @@ chatBox.innerHTML =  ""
  </h4>
    <ul>  
       ${names.map(name=>{
-       return  `<li>${name}</li>`
+       return  `<li class="li">${name}</li>`
       }).join(" ")}
    </ul>`
 
@@ -51,8 +51,10 @@ else{
 if(location.pathname==="/"){
     chatBox.addEventListener("click" , (e)=>{
     
+       
+        if(!e.target.classList.contains("li"))return;
         console.log(e.target.innerHTML);
-      
+    //    console.log(e.target.srcElement);
         socket.emit("invite" , {
             name:e.target.innerHTML,
             sender:username
@@ -143,6 +145,8 @@ window.addEventListener("load" , ()=>{
     }
 })
 
+// document.addEventListener("")
+
 socket.on("hello" , data=>{
     console.log(data);
 })
@@ -229,3 +233,8 @@ socket.on("switch" , data=>{
 // socket.on("usersConnected" , data=>{
 //     console.log(data);
 // })
+
+
+socket.on("playerLeft" , (data)=>{
+    console.log(data);
+});
