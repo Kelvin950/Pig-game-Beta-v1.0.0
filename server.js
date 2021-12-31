@@ -1,7 +1,8 @@
 const express =  require("express");
 const app  = express();
 const socketio= require("socket.io");
-const port = process.env.Port || 3000
+const port = process.env.Port || 3000;
+const page = "dsffdf";
 
 app.use(express.static(__dirname+"/public"));
 
