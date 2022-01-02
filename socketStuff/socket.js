@@ -59,6 +59,8 @@ cb();
     
 })
 
+
+
 // socket.on('sendMessage', (message, callback) => {
 //    const filter = new Filter()
 //    if (filter.isProfane(message)) {
@@ -103,7 +105,10 @@ io.emit("playerDetails" , {
 
 socket.on("joinedGame" ,({room})=>{
    console.log(room);
-       
+  const isPlayerInRoom = playersInRoom(room).find(player=>player.getName()===username);
+  if(!isPlayerInRoom){
+     return socket.emit("NotInARoom" , "not in a room");
+  }  
    socket.join(room);
    socket.emit("gamePlayer" , {
       data:players.find(player=>player.getName() === username)

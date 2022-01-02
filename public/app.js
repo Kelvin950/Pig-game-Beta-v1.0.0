@@ -236,5 +236,9 @@ socket.on("switch" , data=>{
 
 
 socket.on("playerLeft" , (data)=>{
-    console.log(data);
+    console.log(data ,'playerleft');
 });
+
+socket.on("NotInARoom" , data=>{
+    console.log(data);
+})
